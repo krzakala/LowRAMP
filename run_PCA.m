@@ -21,7 +21,7 @@ opt.damping=-1;%adaptive damping
 opt.prior_u='Gauss';     opt.signal_u=U;       
 opt.prior_v='Gauss';     opt.signal_v=V;       
 opt.damping=0.2;
-opt.verbose_n=10;
+opt.verbose_n=1;
 tic
 [ u_ample,v_ample ]  = LowRAMP_UV(S,Iinv,RANK,opt)    ;
 toc;

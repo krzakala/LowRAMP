@@ -180,6 +180,9 @@ function [u,v] = LowRAMP_UV_completion( S, Delta , S_sup,RANK,opt)
             end
             disp(PR);
         end
+        if (abs(delta_free_nrg)/free_nrg<opt.conv_criterion)
+            break;
+        end
         t=t+1;
     end
 end
