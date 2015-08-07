@@ -20,4 +20,4 @@ Files included in this package :
 USAGE : from matlab, run run_AMPLE_UV and run_AMPLE_XX
 
 These equations are based on http://arxiv.org/abs/1503.00338 (ISIT 2015) and http://arxiv.org/abs/1507.03857
-Comments and remarks regarding bugs or functionalities are more than welcome
+Comments and remarks regarding bugs or functionalities are more than welcome.
