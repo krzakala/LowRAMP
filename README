@@ -1,0 +1,23 @@
+AMPLE: Approximate Message Passing for Low rank matrix Estimation
+COPYRIGHT (C) 2015 Thibault Lesieur, Florent Krzakala and Lenka Zdeborova
+Contact : florent.krzakala@ens.fr
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+Files included in this package :
+    AMPLE_UV.m : The main reconstruction code for UV' factorizarion
+    run_AMPLE_UX.m : a Demo file
+    AMPLE_XX.m : The main reconstruction code for XX' factorizarion
+    run_AMPLE_XX.m : a Demo file
+    subroutines folder : all subroutines needed by the different parts of the algorithm. 
+   
+USAGE : from matlab, run run_AMPLE_UV and run_AMPLE_XX
+
+These equations are based on http://arxiv.org/abs/1503.00338 (ISIT 2015) and http://arxiv.org/abs/1507.03857
+Comments and remarks regarding bugs or functionalities are more than welcome
