@@ -1,11 +1,14 @@
-function [u,v] = AMPLE_UV( S, Delta , RANK,opt)
-% AMP Lowrank Estimation (AMPLE) is a Belief-Propagation based solver for UV' matrix factorization
+function [u,v] = AMPLE_UV_completion( S, Delta , S_sup,RANK,opt)
+% AMP Lowrank Estimation (AMPLE) is a Belief-Propagation based
+% solver for UV' matrix factorization
+% This version is for completion when a part of S is actually missing    
 % SYNTAX:
-% [u,v] = AMPLE_UV(S, Delta, RANK,opt)
+% [u,v] = AMPLE_UV(S, Delta, S_sup, RANK,opt)
 
 % Inputs :
 % S                     NxM matrix
 % Delta                  Estimated noise
+% S                     NxM matrix, support
 % opt -    structure containing  option fields
 %    Details of the option:
 %   .nb_iter            max number of iterations [default : 1000]
@@ -25,7 +28,7 @@ function [u,v] = AMPLE_UV( S, Delta , RANK,opt)
 
     path(path,'./Subroutines');
     % Reading parameters
-    if (nargin <= 3)
+    if (nargin <= 4)
         opt = AMPLE_UV_Opt(); % Use default  parameters
     end        
     [m,n]=size(S);
@@ -75,10 +78,12 @@ function [u,v] = AMPLE_UV( S, Delta , RANK,opt)
     v_old=zeros(n,RANK);
     u_var=zeros(RANK,RANK);
     v_var=zeros(RANK,RANK);
-
-    A_u=zeros(RANK,RANK);
+    u_var_all=zeros(m,RANK,RANK);
+    v_var_all=zeros(n,RANK,RANK);
+    
+    A_u=zeros(m,RANK,RANK);%I have m of them
     B_u=zeros(m,RANK);
-    A_v=zeros(RANK,RANK);
+    A_v=zeros(n,RANK,RANK);%I have n of them
     B_v=zeros(n,RANK);
     
     diff=1;
@@ -99,9 +104,15 @@ function [u,v] = AMPLE_UV( S, Delta , RANK,opt)
         
         %AMP iteration
         B_u_new=(S*v)/sqrt(n)-u_old*v_var/(Delta);
-        A_u_new=v'*v/(n*Delta);
         B_v_new=(S'*u)/sqrt(n)-v_old*(m*u_var/n)/(Delta);
-        A_v_new=u'*u/(n*Delta);
+        for i=1:m  
+            thisv=repmat(S_sup(i,:)',1,RANK).*v;
+            A_u_new(i,:,:)=thisv'*thisv/(n*Delta);      
+        end
+        for i=1:n  
+            thisu=repmat(S_sup(:,i),1,RANK).*u;
+            A_v_new(i,:,:)=thisu'*thisu/(n*Delta);            
+        end
         
         %Keep old variables
         u_old=u;
@@ -125,17 +136,25 @@ function [u,v] = AMPLE_UV( S, Delta , RANK,opt)
                 A_u=A_u_new;                A_v=A_v_new;
                 B_u=B_u_new;                B_v=B_v_new;
             end
-                
-            [u,u_var,logu] = Fun_u(A_u,B_u);
-            [v,v_var,logv] = Fun_v(A_v,B_v);
-        
-            %Compute the Free Entropy
-            minusDKL_u=logu+0.5*m*trace(A_u*u_var)+trace(0.5*A_u*u'*u)-trace(u'*B_u);   
-            minusDKL_v=logv+0.5*n*trace(A_v*v_var)+trace(0.5*A_v*v'*v)-trace(v'*B_v);   
-            term_u=-trace((u'*u)*v_var)/(2*Delta);
-            term_v=-(m/n)*trace((v'*v)*u_var)/(2*Delta);%this is such that A_u and B_u gets a factor m/n
-            term_uv=sum(sum((u*v'.*S)))/(sqrt(n))-trace((u'*u)*(v'*v))/(2*n*Delta);
-            free_nrg=(minusDKL_u+minusDKL_v+term_u+term_v+term_uv)/n;
+            
+            logutot=0;u_var=zeros(RANK,RANK);
+            for i=1:m  
+                [u(i,:),u_var_all(i,:,:),logu] = Fun_u(squeeze(A_u(i,:,:)),B_u(i,:));
+                u_var=u_var+squeeze(u_var_all(i,:,:));
+                logutot=logutot+logu;
+            end
+            u_var=u_var/m;
+            
+            logvtot=0;
+            for  i=1:n  
+                [v(i,:),v_var_all(i,:,:),logv] = Fun_v(squeeze(A_u(i,:,:)),B_v(i,:));
+                v_var=v_var+squeeze(v_var_all(i,:,:));
+                logvtot=logvtot+logv;
+            end
+            v_var=v_var/n;
+            
+            free_nrg=logutot+logvtot;%This is a wrong formula, it
+                                     %needs to be written :-(
             
             if (t==0) break;end
             if (opt.damping>0) break;end
