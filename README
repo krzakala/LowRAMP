@@ -1,4 +1,4 @@
-AMPLE: Approximate Message Passing for Low rank matrix Estimation
+LowRAMP: Low rank Approximate Message Passing, a software for low rank matrix factorization based on belief propagation.
 COPYRIGHT (C) 2015 Thibault Lesieur, Florent Krzakala and Lenka Zdeborova
 Contact : florent.krzakala@ens.fr
 
@@ -11,13 +11,13 @@ You should have received a copy of the GNU General Public License along with thi
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 Files included in this package :
-    AMPLE_UV.m : The main reconstruction code for UV' factorizarion
-    run_AMPLE_UX.m : a Demo file
-    AMPLE_XX.m : The main reconstruction code for XX' factorizarion
-    run_AMPLE_XX.m : a Demo file
+    LowRAMP_UV.m : The main reconstruction code for UV' factorizarion
+    run_LowRAMP_UX.m : a Demo file
+    LowRAMP_XX.m : The main reconstruction code for XX' factorizarion
+    run_LowRAMP_XX.m : a Demo file
     subroutines folder : all subroutines needed by the different parts of the algorithm. 
    
-USAGE : from matlab, run run_AMPLE_UV and run_AMPLE_XX
+USAGE : from matlab, run the demo run_LowRAMP_UV and run_LowRAMP_XX
 
 These equations are based on http://arxiv.org/abs/1503.00338 (ISIT 2015) and http://arxiv.org/abs/1507.03857
 Comments and remarks regarding bugs or functionalities are more than welcome.

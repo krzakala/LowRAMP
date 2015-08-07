@@ -1,7 +1,7 @@
-function [ x ] = AMPLE_XX( S, Delta , RANK,opt)
-% AMP Lowrank Estimation (AMPLE) is a Belief-Propagation based solver for XX' matrix factorization
+function [ x ] = LowRAMP_XX( S, Delta , RANK,opt)
+% LowRAMP is a Low Rank factorization Belief-Propagation based solver for XX' matrix factorization
 % SYNTAX:
-% [x ] = AMPLE_XX(S, Delta, RANK,opt)
+% [x ] = LowRAMP_XX(S, Delta, RANK,opt)
 
 % Inputs :
 % S                     NxN matrix
@@ -24,7 +24,7 @@ function [ x ] = AMPLE_XX( S, Delta , RANK,opt)
     path(path,'./Subroutines');
     % Reading parameters
     if (nargin <= 3)
-        opt = AMPLE_XX_Opt(); % Use default  parameters
+        opt = LowRAMP_XX_Opt(); % Use default  parameters
     end        
     [m,n]=size(S);m=n;        
 

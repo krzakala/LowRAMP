@@ -1,4 +1,4 @@
-% AMPLE_UV_Opt  : Function to set AMPLE_UV_Opt to their default values
+% LowRAMP_UV_Opt  : Function to set LowRAMP_UV_Opt to their default values
 %
 %    Details of the option:
 %   .nb_iter            max number of iterations [default : 1000]
@@ -13,7 +13,7 @@
 %   .prior_v              prior on the data [Community]
 %                       One can use 'Gauss' of 'Community'
 
-function opt = AMPLE_UV_Opt()
+function opt = LowRAMP_UV_Opt()
        opt.nb_iter=1000;
        opt.verbose_n=1;
        opt.init_sol=1;

@@ -1,7 +1,7 @@
-function [u,v] = AMPLE_UV( S, Delta , RANK,opt)
-% AMP Lowrank Estimation (AMPLE) is a Belief-Propagation based solver for UV' matrix factorization
+function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
+% LowRAMP is a Low Rank factorization Belief-Propagation based solver for UV' matrix factorization
 % SYNTAX:
-% [u,v] = AMPLE_UV(S, Delta, RANK,opt)
+% [u,v] = LowRAMP_UV(S, Delta, RANK,opt)
 
 % Inputs :
 % S                     NxM matrix
@@ -26,7 +26,7 @@ function [u,v] = AMPLE_UV( S, Delta , RANK,opt)
     path(path,'./Subroutines');
     % Reading parameters
     if (nargin <= 3)
-        opt = AMPLE_UV_Opt(); % Use default  parameters
+        opt = LowRAMP_UV_Opt(); % Use default  parameters
     end        
     [m,n]=size(S);
     

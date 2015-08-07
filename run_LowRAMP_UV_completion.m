@@ -18,11 +18,11 @@ Iinv=Delta;
 
 %I would like to have a regularization here...
 
-fprintf(1,'Running AMP \n');
+fprintf(1,'Running LowRAMP \n');
 opt=AMPLE_UV_Opt;
 opt.damping=0.5;
 opt.prior_u='Gauss';        
 opt.prior_v='Gauss';        
 tic
-[ u_amp,v_amp ] = AMPLE_UV_completion(S,Iinv,Y_sup,RANK,opt)    ;
+[ u_amp,v_amp ] = LowRAMP_UV_completion(S,Iinv,Y_sup,RANK,opt)    ;
 toc
