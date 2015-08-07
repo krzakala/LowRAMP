@@ -11,12 +11,13 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
 %   .nb_iter            max number of iterations [default : 1000]
 %   .verbose_n          print results every n iteration (0 -> never) [1]
 %   .conv_criterion     convergence criterion [10^(-8)]
-%   .signal_U           a solution to compare to while running
-%   .signal_V           a solution to compare to while running
+%   .signal_u           a solution to compare to while running
+%   .signal_v           a solution to compare to while running
 %   .init_sol           0 (zeros) 1 (random) 2 (SVD) 3 (solution) [1]
 %   .damping            damping coefficient of the learning [-1]
 %                       damping=-1 means adaptive damping, otherwise fixed
-%   .prior              prior on the data [Community]
+%   .prior_u              prior on the data [gauss]
+%   .prior_v              prior on the data [Community]
 %                       One can use 'Gauss' of 'Community'
 %
 % Outputs :
@@ -117,8 +118,8 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
          while (pass~=1) 
             if (t>0)
                 %here should be corrected with ACTUAL matrix inversion!
-                A_u=1./((1-damp)./A_u_old+damp./A_u_new);
-                A_v=1./((1-damp)./A_v_old+damp./A_v_new);
+                A_u=(1-damp)*A_u_old+damp*A_u_new;
+                A_v=(1-damp)*A_v_old+damp*A_v_new;
                 B_u=(1-damp)*B_u_old+damp*B_u_new;
                 B_v=(1-damp)*B_v_old+damp*B_v_new;
             else
@@ -154,7 +155,7 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
         if ((t==0)||(mod(t,opt.verbose_n)==0))
         PR=sprintf('%d %f %f %f %f',[t Delta diff free_nrg damp]);              
             if (~(max(size(opt.signal_u)) < 2))
-                PR2=[min(mean2((u-opt.signal_u).^2),mean2((-u-opt.signal_u).^2)) min(mean2((v-opt.signal_v).^2),mean2((-v-opt.signal_v).^2))];
+                PR2=sprintf(' %e %e',[min(mean2((u-opt.signal_u).^2),mean2((-u-opt.signal_u).^2)) min(mean2((v-opt.signal_v).^2),mean2((-v-opt.signal_v).^2))]);
                 PR=[PR PR2];
             end
             disp(PR);
