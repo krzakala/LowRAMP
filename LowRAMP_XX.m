@@ -122,7 +122,7 @@ function [ x ] = LowRAMP_XX( S, Delta , RANK,opt)
         if ((t==0)||(mod(t,opt.verbose_n)==0))
             PR=sprintf('%d %f %f %f %f',[t Delta diff free_nrg damp]);    
             if (~(max(size(opt.signal)) < 2))
-                PR2=min(mean2((x-opt.signal).^2),mean2((-x-opt.signal).^2));
+                PR2=sprintf(' %e ',min(mean2((x-opt.signal).^2),mean2((-x-opt.signal).^2)));
                 PR=[PR PR2];
             end
             disp(PR);

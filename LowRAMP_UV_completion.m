@@ -127,8 +127,8 @@ function [u,v] = LowRAMP_UV_completion( S, Delta , S_sup,RANK,opt)
          while (pass~=1) 
             if (t>0)
                 %here should be corrected with ACTUAL matrix inversion!
-                A_u=1./((1-damp)./A_u_old+damp./A_u_new);
-                A_v=1./((1-damp)./A_v_old+damp./A_v_new);
+                A_u=(1-damp)*A_u_old+damp*A_u_new;
+                A_v=(1-damp)*A_v_old+damp*A_v_new;
                 B_u=(1-damp)*B_u_old+damp*B_u_new;
                 B_v=(1-damp)*B_v_old+damp*B_v_new;
             else
@@ -172,7 +172,7 @@ function [u,v] = LowRAMP_UV_completion( S, Delta , S_sup,RANK,opt)
         if ((t==0)||(mod(t,opt.verbose_n)==0))
         PR=sprintf('%d %f %f %f %f',[t Delta diff free_nrg damp]);              
             if (~(max(size(opt.signal_u)) < 2))
-                PR2=[min(mean2((u-opt.signal_u).^2),mean2((-u-opt.signal_u).^2)) min(mean2((v-opt.signal_v).^2),mean2((-v-opt.signal_v).^2))];
+                PR2=sprintf(' %e %e',[min(mean2((u-opt.signal_u).^2),mean2((-u-opt.signal_u).^2)) min(mean2((v-opt.signal_v).^2),mean2((-v-opt.signal_v).^2))]);
                 PR=[PR PR2];
             end
             disp(PR);

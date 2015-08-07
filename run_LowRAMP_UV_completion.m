@@ -1,6 +1,6 @@
 path(path,'./Subroutines');
-m=4000;n=200;%size of the vector U and V
-Delta=1e-4;%Variance of the gaussian noise
+m=400;n=200;%size of the vector U and V
+Delta=1e-6;%Variance of the gaussian noise
 fraction=1;%fraction of observed entries : half!
 RANK=3;%rank
 
@@ -21,8 +21,9 @@ Iinv=Delta;
 fprintf(1,'Running LowRAMP \n');
 opt=AMPLE_UV_Opt;
 opt.damping=0.5;
-opt.prior_u='Gauss';        
-opt.prior_v='Gauss';        
+opt.prior_u='Gauss';     opt.signal_u=U;       
+opt.prior_v='Gauss';     opt.signal_v=V;       
+opt.damping=-1;
 tic
 [ u_amp,v_amp ] = LowRAMP_UV_completion(S,Iinv,Y_sup,RANK,opt)    ;
 toc
