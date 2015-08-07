@@ -91,7 +91,7 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
                 PR=sprintf('T  Delta  diff    Free Entropy damp    Error_u Error_ v');
     end
     disp(PR);
-    old_free_nrg=-realmax('double');
+    old_free_nrg=-realmax('double');delta_free_nrg=0;
     
     while ((diff>opt.conv_criterion)&&(t<opt.nb_iter))    
         %Keep old variable
@@ -129,7 +129,7 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
                 
             [u,u_var,logu] = Fun_u(A_u,B_u);
             [v,v_var,logv] = Fun_v(A_v,B_v);
-        
+            
             %Compute the Free Entropy
             minusDKL_u=logu+0.5*m*trace(A_u*u_var)+trace(0.5*A_u*u'*u)-trace(u'*B_u);   
             minusDKL_v=logv+0.5*n*trace(A_v*v_var)+trace(0.5*A_v*v'*v)-trace(v'*B_v);   
@@ -137,21 +137,21 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
             term_v=-(m/n)*trace((v'*v)*u_var)/(2*Delta);%this is such that A_u and B_u gets a factor m/n
             term_uv=sum(sum((u*v'.*S)))/(sqrt(n))-trace((u'*u)*(v'*v))/(2*n*Delta);
             free_nrg=(minusDKL_u+minusDKL_v+term_u+term_v+term_uv)/n;
-            
-            if (t==0) break;end
-            if (opt.damping>0) break;end
+                      
+            if (t==0)  delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg; break; end
+            if (opt.damping>0)  delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg; break;end
             %Otherwise adapative damping
             if (free_nrg>old_free_nrg)
+                delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg;
                 old_free_nrg=free_nrg;
                 pass=1;
             else
                  damp=damp/2;
-                 if damp<1e-4;      break;end;
-            end
+                 if damp<1e-4;   delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg;   break;end;
+            end                                 
         end
         
         diff=mean2(abs(v-v_old))+mean2(abs(u-u_old));
-
         if ((t==0)||(mod(t,opt.verbose_n)==0))
         PR=sprintf('%d %f %f %f %f',[t Delta diff free_nrg damp]);              
             if (~(max(size(opt.signal_u)) < 2))
@@ -160,7 +160,10 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
             end
             disp(PR);
         end
-        t=t+1;
+        if (abs(delta_free_nrg)/free_nrg<opt.conv_criterion)
+            break;
+        end
+        t=t+1;   
     end
 end
 

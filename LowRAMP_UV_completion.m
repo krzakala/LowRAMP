@@ -94,7 +94,7 @@ function [u,v] = LowRAMP_UV_completion( S, Delta , S_sup,RANK,opt)
                 PR=sprintf('T  Delta  diff    Free Entropy damp    Error_u Error_ v');
     end
     disp(PR);
-    old_free_nrg=-realmax('double');
+    old_free_nrg=-realmax('double');delta_free_nrg=0;
     
     while ((diff>opt.conv_criterion)&&(t<opt.nb_iter))    
         %Keep old variable
@@ -106,6 +106,7 @@ function [u,v] = LowRAMP_UV_completion( S, Delta , S_sup,RANK,opt)
         B_v_new=(S'*u)/sqrt(n)-v_old*(m*u_var/n)/(Delta);
         for i=1:m  
             thisv=repmat(S_sup(i,:)',1,RANK).*v;
+            thisv=v;
             A_u_new(i,:,:)=thisv'*thisv/(n*Delta);      
         end
         for i=1:n  
@@ -146,25 +147,27 @@ function [u,v] = LowRAMP_UV_completion( S, Delta , S_sup,RANK,opt)
             
             logvtot=0;
             for  i=1:n  
-                [v(i,:),v_var_all(i,:,:),logv] = Fun_v(squeeze(A_u(i,:,:)),B_v(i,:));
+                [v(i,:),v_var_all(i,:,:),logv] = Fun_v(squeeze(A_v(i,:,:)),B_v(i,:));
                 v_var=v_var+squeeze(v_var_all(i,:,:));
                 logvtot=logvtot+logv;
             end
             v_var=v_var/n;
             
-            free_nrg=logutot+logvtot;%This is a wrong formula, it
+            free_nrg=logutot+logvtot;%This is a wrong formula, 
+                                     %The correct one still needs
                                      %needs to be written :-(
             
-            if (t==0) break;end
-            if (opt.damping>0) break;end
+            if (t==0)  delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg; break; end
+            if (opt.damping>0)  delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg; break;end
             %Otherwise adapative damping
             if (free_nrg>old_free_nrg)
+                delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg;
                 old_free_nrg=free_nrg;
                 pass=1;
             else
                  damp=damp/2;
-                 if damp<1e-4;      break;end;
-            end
+                 if damp<1e-4;   delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg;   break;end;
+            end  
         end
         
         diff=mean2(abs(v-v_old))+mean2(abs(u-u_old));

@@ -67,7 +67,7 @@ function [ x ] = LowRAMP_XX( S, Delta , RANK,opt)
                 PR=sprintf('T  Delta  diff    Free Entropy damp    Error');
     end
     disp(PR);
-    old_free_nrg=-realmax('double');
+    old_free_nrg=-realmax('double');delta_free_nrg=0;
 
     while ((diff>opt.conv_criterion)&&(t<opt.nb_iter))    
         %Keep old variable
@@ -106,15 +106,15 @@ function [ x ] = LowRAMP_XX( S, Delta , RANK,opt)
             term_xx=sum(sum((x*x'.*S)))/(2*sqrt(n))-trace((x'*x)*(x'*x))/(4*n*Delta);
             free_nrg=(minusDKL+term_x+term_xx)/n;
 
-            if (t==0) break;end
-            if (opt.damping>0) break;end
+            if (t==0) delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg; break;end
+            if (opt.damping>0) delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg;break;end
             %Otherwise adapative damping
             if (free_nrg>old_free_nrg)
-                old_free_nrg=free_nrg;
+                delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg;
                 pass=1;
             else
                  damp=damp/2;
-                 if damp<1e-4;      break;end;
+                 if damp<1e-4;   delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg;   break;end;
             end
         end
         
@@ -126,6 +126,9 @@ function [ x ] = LowRAMP_XX( S, Delta , RANK,opt)
                 PR=[PR PR2];
             end
             disp(PR);
+        end
+        if (abs(delta_free_nrg)/free_nrg<opt.conv_criterion)
+            break;
         end
         t=t+1;
     end
