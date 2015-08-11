@@ -127,7 +127,7 @@ function [ x ] = LowRAMP_XX( S, Delta , RANK,opt)
             end
             disp(PR);
         end
-        if (abs(delta_free_nrg)/free_nrg<opt.conv_criterion)
+        if (abs(delta_free_nrg/free_nrg)<opt.conv_criterion)
             break;
         end
         t=t+1;

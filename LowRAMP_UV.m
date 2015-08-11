@@ -160,7 +160,7 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
             end
             disp(PR);
         end
-        if (abs(delta_free_nrg)/free_nrg<opt.conv_criterion)
+        if (abs(delta_free_nrg/free_nrg)<opt.conv_criterion)        
             break;
         end
         t=t+1;   
