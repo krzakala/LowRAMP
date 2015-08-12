@@ -1,9 +1,9 @@
 path(path,'./Subroutines');
-m=500;n=100;%size of the vector U and V
+m=1000;n=1000;%size of the vector U and V
 Delta=1e-4;%Variance of the gaussian noise
 RANK=3;%rank
 
-fprintf(1,'Creating a signal of rank %d \n',RANK);
+fprintf(1,'Creating a %dx%d signal of rank %d \n',m,n,RANK);
 U = randn(m,RANK);
 V = randn(n,RANK);
 
@@ -20,16 +20,11 @@ opt=LowRAMP_UV_Opt;
 opt.damping=-1;%adaptive damping
 opt.prior_u='Gauss';     opt.signal_u=U;       
 opt.prior_v='Gauss';     opt.signal_v=V;       
-opt.damping=0.2;
 opt.verbose_n=1;
 tic
 [ u_ample,v_ample ]  = LowRAMP_UV(S,Iinv,RANK,opt)    ;
 toc;
-disp('Squared Reconstruction error');
+disp('Squared Reconstruction error on the matrix');
 mean2((u_ample*v_ample'/sqrt(n)-Y).^2)
 
-tic
-[ u_amp,v_amp ] = LowRAMP_UV_completion(S,Iinv,ones(size(S)),RANK,opt)    ;
-toc
-disp('Squared Reconstruction error');
-mean2((u_amp*v_amp'/sqrt(n)-Y).^2)
+

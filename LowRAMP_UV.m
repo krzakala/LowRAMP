@@ -74,8 +74,8 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
            
     u_old=zeros(m,RANK);
     v_old=zeros(n,RANK);
-    u_var=zeros(RANK,RANK);
-    v_var=zeros(RANK,RANK);
+    u_var=zeros(RANK,RANK);u_var_old=zeros(RANK,RANK);
+    v_var=zeros(RANK,RANK);v_var_old=zeros(RANK,RANK);
 
     A_u=zeros(RANK,RANK);
     B_u=zeros(m,RANK);
@@ -93,20 +93,21 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
     disp(PR);
     old_free_nrg=-realmax('double');delta_free_nrg=0;
     
+
     while ((diff>opt.conv_criterion)&&(t<opt.nb_iter))    
         %Keep old variable
         A_u_old=A_u;        A_v_old=A_v;
         B_u_old=B_u;        B_v_old=B_v;      
         
         %AMP iteration
-        B_u_new=(S*v)/sqrt(n)-u_old*v_var/(Delta);
+        B_u_new=(S*v)/sqrt(n)-u_old*v_var_old/(Delta);
         A_u_new=v'*v/(n*Delta);
-        B_v_new=(S'*u)/sqrt(n)-v_old*(m*u_var/n)/(Delta);
+        B_v_new=(S'*u)/sqrt(n)-v_old*(m*u_var_old/n)/(Delta);
         A_v_new=u'*u/(n*Delta);
         
         %Keep old variables
-        u_old=u;
-        v_old=v;
+        u_old=u;u_var_old=u_var;
+        v_old=v;v_var_old=v_var;
         
         %Iteration with fixed damping or learner one
         pass=0;
@@ -128,8 +129,9 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
             end
                 
             [u,u_var,logu] = Fun_u(A_u,B_u);
-            [v,v_var,logv] = Fun_v(A_v,B_v);
+            [v,v_var,logv] = Fun_v(A_v,B_v);            
             
+  
             %Compute the Free Entropy
             minusDKL_u=logu+0.5*m*trace(A_u*u_var)+trace(0.5*A_u*u'*u)-trace(u'*B_u);   
             minusDKL_v=logv+0.5*n*trace(A_v*v_var)+trace(0.5*A_v*v'*v)-trace(v'*B_v);   
@@ -139,10 +141,10 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
             free_nrg=(minusDKL_u+minusDKL_v+term_u+term_v+term_uv)/n;
                       
             if (t==0)  delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg; break; end
-            if (opt.damping>0)  delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg; break;end
+            if (opt.damping>=0)  delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg; break;end
             %Otherwise adapative damping
             if (free_nrg>old_free_nrg)
-                delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg;
+                delta_free_nrg=old_free_nrg-free_nrg;
                 old_free_nrg=free_nrg;
                 pass=1;
             else

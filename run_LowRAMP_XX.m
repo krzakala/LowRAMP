@@ -8,7 +8,7 @@ Delta=sqrt(p*(1-p)/Deltaeff);
 pout = p - Delta/(RANK*sqrt(n));
 pin = p + (1-1/RANK)*Delta/sqrt(n);
 
-fprintf(1,'Creating a signal of rank %d \n',RANK);
+fprintf(1,'Creating a %dx%d signal of rank %d \n',n,n,RANK);
  X = zeros(n,RANK);
 for i=1:n
     X(i,ceil(rand()*RANK))=1;
