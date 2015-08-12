@@ -3,7 +3,7 @@ n=2000;m=500;%size of the vector U and V
 Delta=1e-2;%Variance of the gaussian noise
 RANK=3;%rank
 
-fprintf(1,'Creating a signal of rank %d \n',RANK);
+fprintf(1,'Creating a %dx%d signal of rank %d \n',m,n,RANK);
 V = zeros(m,RANK);
 for i=1:m
     V(i,ceil(rand()*RANK))=1;

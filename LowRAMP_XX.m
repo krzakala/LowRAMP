@@ -54,7 +54,8 @@ function [ x ] = LowRAMP_XX( S, Delta , RANK,opt)
             x=opt.signal+1e-4*randn(n,RANK);        
     end    
     x_old=zeros(n,RANK);
-    x_V=zeros(RANK,RANK);
+    x_V=zeros(RANK,RANK);    x_V_old=zeros(RANK,RANK);
+
  
     A=zeros(RANK,RANK);
     B=zeros(n,RANK);
@@ -75,11 +76,12 @@ function [ x ] = LowRAMP_XX( S, Delta , RANK,opt)
         B_old=B;
         
         %AMP iteration
-        B_new=(S*x)/sqrt(n)-x_old*x_V/(Delta);
+        B_new=(S*x)/sqrt(n)-x_old*x_V_old/(Delta);
         A_new=x'*x/(n*Delta);
 
         %Keep old variables
         x_old=x;
+        x_V_old=x_V;
         
         %Iteration with fixed damping or learner one
         pass=0;
@@ -91,14 +93,14 @@ function [ x ] = LowRAMP_XX( S, Delta , RANK,opt)
             
         while (pass~=1) 
             if (t>0)
-                A=1./((1-damp)./A_old+damp./A_new);
+                A=(1-damp)*A_old+damp*A_new;
                 B=(1-damp)*B_old+damp*B_new;
             else
                 A=A_new;
                 B=B_new;
             end
             
-            [x,x_V,logZ] = Fun_a(A,B);%Community prior                
+            [x,x_V,logZ] = Fun_a(A,B);            
             
             %Compute the Free Entropy
             minusDKL=logZ+0.5*n*trace(A*x_V)+trace(0.5*A*x'*x)-trace(x'*B)   ;  
@@ -107,7 +109,7 @@ function [ x ] = LowRAMP_XX( S, Delta , RANK,opt)
             free_nrg=(minusDKL+term_x+term_xx)/n;
 
             if (t==0) delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg; break;end
-            if (opt.damping>0) delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg;break;end
+            if (opt.damping>=0) delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg;break;end
             %Otherwise adapative damping
             if (free_nrg>old_free_nrg)
                 delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg;
@@ -127,7 +129,7 @@ function [ x ] = LowRAMP_XX( S, Delta , RANK,opt)
             end
             disp(PR);
         end
-        if (abs(delta_free_nrg)/free_nrg<opt.conv_criterion)
+        if (abs(delta_free_nrg/free_nrg)<opt.conv_criterion)
             break;
         end
         t=t+1;
