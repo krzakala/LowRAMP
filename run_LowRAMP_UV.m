@@ -19,8 +19,6 @@ S=Y/Delta;Iinv=Delta;
 
 %Calling the code
 fprintf(1,'Running LowRAMP \n');
-damp=-1;%adaptive damping
-init_sol=0;%random init
 tic
 [ u_ample,v_ample ]  = LowRAMP_UV(S,Iinv,RANK)    ;
 toc;
