@@ -10,7 +10,7 @@ Delta=sqrt(p*(1-p)/Deltaeff);
 pout = p - Delta/(RANK*sqrt(n));
 pin = p + (1-1/RANK)*Delta/sqrt(n);
 
-fprintf(1,'Creating a %dx%d signal of rank %d \n',n,n,RANK);
+fprintf(1,'Creating a %dx%d network of rank %d \n',n,n,RANK);
  X = zeros(n,RANK);
 for i=1:n
     X(i,ceil(rand()*RANK))=1;
@@ -22,13 +22,31 @@ random1=random1 +random1';
 random2=triu(rand(n,n)<pout,1);
 random2=random2 +random2';
     
+
+
 A=X*X'.*random1+(1-X*X').*random2;
 S=(Delta/pout)*A - (1-A)*Delta/(1-pout);
 mu=(pin-pout)*sqrt(n);
 Iinv=(mu*mu/(pout*(1-pout)))^-1;
+
+
+subplot(1,3,1)
+imshow(X*X')
+title('The original matrix')
+subplot(1,3,2)
+imshow(A)
+title('The data')
+
 
 %Calling the code
 fprintf(1,'Running LowRAMP \n');
 tic
 [x_ample] = LowRAMP_XX(S,Iinv,RANK)    ;
 toc;
+
+subplot(1,3,3)
+imshow(x_ample*x_ample')
+title('The reconstruted matrix')
+
+
+
