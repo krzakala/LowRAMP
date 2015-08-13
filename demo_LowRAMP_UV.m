@@ -1,4 +1,6 @@
 path(path,'./Subroutines');
+path(path,'./Functions');
+%
 n=2000;m=500;%size of the vector U and V
 Delta=1e-2;%Variance of the gaussian noise
 RANK=3;%rank

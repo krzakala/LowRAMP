@@ -1,4 +1,6 @@
 path(path,'./Subroutines');
+path(path,'./Functions');
+%
 n=2500;%size of the vector X
 RANK=3;%rank
 p=0.5;
