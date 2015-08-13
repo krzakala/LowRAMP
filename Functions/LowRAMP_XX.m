@@ -76,7 +76,7 @@ function [ x ] = LowRAMP_XX( S, Delta , RANK,opt)
         B_old=B;
         
         %AMP iteration
-        B_new=(S*x)/sqrt(n)-x_old*x_V_old/(Delta);
+        B_new=(S*x)/sqrt(n)-x_old*x_V/(Delta);
         A_new=x'*x/(n*Delta);
 
         %Keep old variables

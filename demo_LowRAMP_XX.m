@@ -1,4 +1,6 @@
 path(path,'./Subroutines');
+path(path,'./Functions');
+%
 n=2500;%size of the vector X
 RANK=3;%rank
 p=0.5;
@@ -27,8 +29,6 @@ Iinv=(mu*mu/(pout*(1-pout)))^-1;
 
 %Calling the code
 fprintf(1,'Running LowRAMP \n');
-damp=-1;%adaptive damping
-init_sol=0;%random init
 tic
 [x_ample] = LowRAMP_XX(S,Iinv,RANK)    ;
 toc;

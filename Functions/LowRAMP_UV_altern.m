@@ -1,4 +1,4 @@
-function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
+function [u,v] = LowRAMP_UV_altern( S, Delta , RANK,opt)
 % LowRAMP is a Low Rank factorization Belief-Propagation based solver for UV' matrix factorization
 % SYNTAX:
 % [u,v] = LowRAMP_UV(S, Delta, RANK,opt)
@@ -92,24 +92,25 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
     end
     disp(PR);
     old_free_nrg=-realmax('double');delta_free_nrg=0;
+    minusDKL_v=0;
+    minusDKL_u=0;
+    term_u=0;
+    term_v=0;
     
-
-    while ((diff>opt.conv_criterion)&&(t<opt.nb_iter))    
+    while ((diff>opt.conv_criterion)&&(t<opt.nb_iter))           
+        %First pass with u
         %Keep old variable
-        A_u_old=A_u;        A_v_old=A_v;
-        B_u_old=B_u;        B_v_old=B_v;      
-        
+        A_u_old=A_u;       
+        B_u_old=B_u;           
+
         %AMP iteration
-        B_u_new=(S*v)/sqrt(n)-u_old*v_var_old/(Delta);
+        B_u_new=(S*v)/sqrt(n)-u*v_var/(Delta);
         A_u_new=v'*v/(n*Delta);
-        B_v_new=(S'*u)/sqrt(n)-v_old*(m*u_var_old/n)/(Delta);
-        A_v_new=u'*u/(n*Delta);
-        
+                
         %Keep old variables
-        u_old=u;u_var_old=u_var;
-        v_old=v;v_var_old=v_var;
+        u_old=u;
         
-        %Iteration with fixed damping or learner one
+        %Iteration with fixed damping or learned one
         pass=0;
         if (opt.damping==-1)
             damp=1;
@@ -119,23 +120,64 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
          while (pass~=1) 
             if (t>0)
                 %here should be corrected with ACTUAL matrix inversion!
-                A_u=(1-damp)*A_u_old+damp*A_u_new;
-                A_v=(1-damp)*A_v_old+damp*A_v_new;
+                A_u=(1-damp)*A_u_old+damp*A_u_new;               
                 B_u=(1-damp)*B_u_old+damp*B_u_new;
-                B_v=(1-damp)*B_v_old+damp*B_v_new;
             else
-                A_u=A_u_new;                A_v=A_v_new;
-                B_u=B_u_new;                B_v=B_v_new;
+                A_u=A_u_new;                
+                B_u=B_u_new;
             end
                 
             [u,u_var,logu] = Fun_u(A_u,B_u);
-            [v,v_var,logv] = Fun_v(A_v,B_v);            
-            
   
             %Compute the Free Entropy
             minusDKL_u=logu+0.5*m*trace(A_u*u_var)+trace(0.5*A_u*u'*u)-trace(u'*B_u);   
-            minusDKL_v=logv+0.5*n*trace(A_v*v_var)+trace(0.5*A_v*v'*v)-trace(v'*B_v);   
             term_u=-trace((u'*u)*v_var)/(2*Delta);
+            term_uv=sum(sum((u*v'.*S)))/(sqrt(n))-trace((u'*u)*(v'*v))/(2*n*Delta);
+            free_nrg=(minusDKL_u+minusDKL_v+term_u+term_v+term_uv)/n;
+                      
+            if (t==0)  delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg; break; end
+            if (opt.damping>=0)  delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg; break;end
+            %Otherwise adapative damping
+            if (free_nrg>old_free_nrg)
+                delta_free_nrg=old_free_nrg-free_nrg;
+                old_free_nrg=free_nrg;
+                pass=1;
+            else
+                 damp=damp/2;
+                 if damp<1e-4;   delta_free_nrg=old_free_nrg-free_nrg;old_free_nrg=free_nrg;   break;end;
+            end                                 
+         end
+                      
+        %Second pass with v
+        A_v_old=A_v;B_v_old=B_v;   
+        
+        %AMP iteration
+        B_v_new=(S'*u)/sqrt(n)-v*(m*u_var/n)/(Delta);
+        A_v_new=u'*u/(n*Delta);
+        
+        %Keep old variables
+        v_old=v;v_var_old=v_var;  
+                
+        %Iteration with fixed damping or learned one
+        pass=0;
+        if (opt.damping==-1)
+            damp=1;
+        else
+            damp=opt.damping;
+        end
+         while (pass~=1) 
+            if (t>0)
+                A_v=(1-damp)*A_v_old+damp*A_v_new;
+                B_v=(1-damp)*B_v_old+damp*B_v_new;
+            else
+                A_v=A_v_new;
+                B_v=B_v_new;
+            end
+                
+            [v,v_var,logv] = Fun_v(A_v,B_v);            
+  
+            %Compute the Free Entropy
+            minusDKL_v=logv+0.5*n*trace(A_v*v_var)+trace(0.5*A_v*v'*v)-trace(v'*B_v);   
             term_v=-(m/n)*trace((v'*v)*u_var)/(2*Delta);%this is such that A_u and B_u gets a factor m/n
             term_uv=sum(sum((u*v'.*S)))/(sqrt(n))-trace((u'*u)*(v'*v))/(2*n*Delta);
             free_nrg=(minusDKL_u+minusDKL_v+term_u+term_v+term_uv)/n;
