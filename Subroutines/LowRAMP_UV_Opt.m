@@ -9,9 +9,11 @@
 %   .init_sol           0 (zeros) 1 (random) 2 (SVD) 3 (solution) [1]
 %   .damping            damping coefficient of the learning [-1]
 %                       damping=-1 means adaptive damping, otherwise fixed
-%   .prior_u              prior on the data [gauss]
-%   .prior_v              prior on the data [Community]
-%                       One can use 'Gauss' of 'Community'
+%   .prior_u            prior on the data [gauss]
+%   .prior_v            prior on the data [Community]
+%   .prior_u_option     If using Rank1Binary, one can pass the fraction rho
+%                       of values equal to 1
+%   .prior_v_option     Idem
 
 function opt = LowRAMP_UV_Opt()
        opt.nb_iter=1000;
@@ -22,5 +24,7 @@ function opt = LowRAMP_UV_Opt()
        opt.signal_v=[];
        opt.damping=-1;
        opt.prior_u='Gauss';        
-       opt.prior_v='Community';        
+       opt.prior_v='Community';     
+       opt.prior_u_option=[];        
+       opt.prior_v_option=[];        
 end

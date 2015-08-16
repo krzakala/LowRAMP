@@ -9,7 +9,10 @@
 %   .damping            damping coefficient of the learning [-1]
 %                       damping=-1 means adaptive damping, otherwise fixed
 %   .prior              prior on the data [Community]
-%                       One can use 'Gauss' of 'Community'
+%                       One can use 'Gauss','Community' or 'Rank1Binary'
+%   .prior_option       If using Rank1Binary, one can pass the fraction rho
+%                       of values equal to 1
+
 
 function opt = LowRAMP_XX_Opt()
        opt.nb_iter=1000;
@@ -18,5 +21,6 @@ function opt = LowRAMP_XX_Opt()
        opt.conv_criterion =10^(-6);
        opt.signal=[];
        opt.damping=-1;
-       opt.prior='Community';        
+       opt.prior='Community';       
+       opt.prior_option=[];        
 end
