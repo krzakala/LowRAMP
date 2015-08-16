@@ -13,6 +13,7 @@ function [ x ] = LowRAMP_XX( S, Delta , RANK,opt)
 %   .conv_criterion     convergence criterion [10^(-8)]
 %   .signal             a solution to compare to while running
 %   .init_sol           0 (zeros) 1 (random) 2 (SVD) 3 (solution) [1]
+%                       4 (according to Prior)  5 (all 1)    
 %   .damping            damping coefficient of the learning [-1]
 %                       damping=-1 means adaptive damping, otherwise fixed
 %   .prior              prior on the data [Community]
@@ -36,25 +37,38 @@ function [ x ] = LowRAMP_XX( S, Delta , RANK,opt)
       case    {'Gauss'}  
         disp    (['Gaussian Prior'])
         Fun_a=@f_gauss;
+     case    {'Rank1Binary'}  
+        disp    ([ Rank1 1/0 Prior'])
+        Fun_a=@(x,y)f_Rank1Binary(x,y,opt.prior_option);
       otherwise
         disp    (['unknown prior'])
         return;
     end
     
     % Initialize 
+   PR=sprintf('Zeros initial condition');
     x=zeros(n,RANK);
     switch     opt.init_sol
         case          1
+            PR=sprintf('Random Gaussian initial conditions');
             x=randn(n,RANK);
         case          2
             PR=sprintf('Use SVD as an initial condition ');
+            disp('SVD');            
             [V,D] = eigs(S,RANK);
-             x=V(:,1:RANK);
+            x=V(:,1:RANK);
         case          3
-            x=opt.signal+1e-4*randn(n,RANK);        
+            PR=sprintf('Use solution as an initial condition ');
+            x=opt.signal+1e-4*randn(n,RANK);   
+        case          4
+            PR=sprintf('Use prior as an initial condition ');
+            x=Fun_a(eye(RANK,RANK),zeros(n,RANK));
+         case          5
+           PR=sprintf('Use ones as an initial condition ');
+            x=ones(n,RANK)/n;      
     end    
     x_old=zeros(n,RANK);
-    x_V=zeros(RANK,RANK);    x_V_old=zeros(RANK,RANK);
+    x_V=zeros(RANK,RANK);  
 
  
     A=zeros(RANK,RANK);
@@ -78,10 +92,13 @@ function [ x ] = LowRAMP_XX( S, Delta , RANK,opt)
         %AMP iteration
         B_new=(S*x)/sqrt(n)-x_old*x_V/(Delta);
         A_new=x'*x/(n*Delta);
+        
+        %Right, here i can play...
+    %   m_mean=sum(sum(triu(A_new,1)))/((RANK*RANK-RANK)*0.5);    
+    %   A_new=diag(diag(A_new))+triu(ones(RANK,RANK),1)*m_mean+triu(ones(RANK,RANK),1)'*m_mean;
 
         %Keep old variables
         x_old=x;
-        x_V_old=x_V;
         
         %Iteration with fixed damping or learner one
         pass=0;

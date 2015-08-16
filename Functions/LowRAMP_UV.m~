@@ -14,7 +14,7 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
 %   .signal_u           a solution to compare to while running
 %   .signal_v           a solution to compare to while running
 %   .init_sol           0 (zeros) 1 (random) 2 (SVD) 3 (solution) [1]
-%                       4 (According to prior)  5 (all 1/n)    
+%                       4 (random>0)  5 (all 1/sqrt(n))    
 %   .damping            damping coefficient of the learning [-1]
 %                       damping=-1 means adaptive damping, otherwise fixed
 %   .prior_u              prior on the data [gauss]
@@ -35,13 +35,13 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
     % Definition of the prior
     switch     opt.prior_u;
       case    {'Community'}  
-        PR=sprintf('U: Community Clustering Prior');
+        PR=sprintf('U: Community Clustering Prior \n');
         Fun_u=@f_clust;
       case    {'Gauss'}  
-        PR=sprintf('U: Gaussian Prior');
+        PR=sprintf('U: Gaussian Prior \n');
         Fun_u=@f_gauss;        
       case    {'Rank1Binary'}  
-        PR=sprintf('U: Rank1 1/0 Prior, rho=%f',opt.prior_u_option);
+        PR=sprintf('U: Rank1 1/0 Prior, rho=%f\n',pt.prior_u_option);
         Fun_u=@(x,y)f_Rank1Binary(x,y,opt.prior_u_option);
         otherwise          
         disp    (['unknown prior'])
@@ -50,19 +50,18 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
     disp(PR);
     switch     opt.prior_v;
       case    {'Community'}  
-        PR=sprintf('V: Community Clustering Prior');
+        disp    (['V: Community Clustering Prior'])
         Fun_v=@f_clust;
       case    {'Gauss'}  
-        PR=sprintf('V: Gaussian Prior');
+        disp    (['V: Gaussian Prior'])
         Fun_v=@f_gauss;
       case    {'Rank1Binary'}  
-        PR=sprintf('V: Rank1 1/0 Prior, rho=%f',opt.prior_v_option);
+        disp    (['V: Rank1 1/0 Prior'])
         Fun_v=@(x,y)f_Rank1Binary(x,y,opt.prior_v_option);
       otherwise
         disp    (['unknown prior'])
         return;
     end
-    disp(PR);
     
     % Initialize
     PR=sprintf('Zeros initial condition');
@@ -70,17 +69,18 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
     v=zeros(n,RANK)/RANK;  
     switch     opt.init_sol
         case          1
-            PR=sprintf('Random Gaussian initial conditions');
+            PR=sprintf('Random Gaussian initial conditions);
             u=randn(m,RANK);
             v=randn(n,RANK);    
         case          2
            PR=sprintf('Use SVD as an initial condition ');
-           disp('SVD');
+           disp('
            [U,SS,V] = svds(S,RANK);
            u=U(:,1:RANK);
            v=V(:,1:RANK);
         case          3
            PR=sprintf('Use solution as an initial condition ');
+           disp(PR);
            u=u_truth+1e-4*randn(m,RANK);
            v=v_truth+1e-4*randn(n,RANK);    
          case          4
@@ -92,8 +92,7 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
             disp(PR);
             u=ones(m,RANK)/m;
             v=ones(n,RANK)/n;    
-    end 
-    disp(PR);
+    end   
            
     u_old=zeros(m,RANK);
     v_old=zeros(n,RANK);
