@@ -7,7 +7,7 @@ m_m=250;n_n=250;
 Delta=0.001;%Variance of the gaussian noise
 RANK=1;%rank
 
-fprintf(1,'Creating a %dx%d signal with a %dx%d submtrix hidden \n',m,n,m_m,n_n);
+fprintf(1,'Creating a %dx%d signal with a %dx%d submatrix hidden \n',m,n,m_m,n_n);
 Y=[zeros(m-m_m,n); ones(m_m,n_n) zeros(m_m,n-n_n)];
 
 subplot(2,2,1)
