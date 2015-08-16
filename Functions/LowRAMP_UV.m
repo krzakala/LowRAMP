@@ -97,9 +97,9 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
            
     u_old=zeros(m,RANK);
     v_old=zeros(n,RANK);
-    u_var=zeros(RANK,RANK);u_var_old=zeros(RANK,RANK);
-    v_var=zeros(RANK,RANK);v_var_old=zeros(RANK,RANK);
-
+    u_var=zeros(RANK,RANK);
+    v_var=zeros(RANK,RANK);
+    
     A_u=zeros(RANK,RANK);
     B_u=zeros(m,RANK);
     A_v=zeros(RANK,RANK);
@@ -125,19 +125,12 @@ function [u,v] = LowRAMP_UV( S, Delta , RANK,opt)
         B_u_new=(S*v)/sqrt(n)-u_old*v_var/(Delta);
         A_u_new=v'*v/(n*Delta);
         
-      %  m_mean=sum(sum(triu(A_u_new,1)))/((RANK*RANK-RANK)*0.5);    
-      %  A_u_new=diag(diag(A_u_new))+triu(ones(RANK,RANK),1)*m_mean+triu(ones(RANK,RANK),1)'*m_mean;
-
-
         B_v_new=(S'*u)/sqrt(n)-v_old*(m*u_var/n)/(Delta);
         A_v_new=u'*u/(n*Delta);
-        
-     %   m_mean=sum(sum(triu(A_v_new,1)))/((RANK*RANK-RANK)*0.5);    
-     %   A_v_new=diag(diag(A_v_new))+triu(ones(RANK,RANK),1)*m_mean+triu(ones(RANK,RANK),1)'*m_mean;
-        
+                
         %Keep old variables
-        u_old=u;u_var_old=u_var;
-        v_old=v;v_var_old=v_var;
+        u_old=u;
+        v_old=v;
         
         %Iteration with fixed damping or learner one
         pass=0;
