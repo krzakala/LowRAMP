@@ -18,7 +18,17 @@ Files included in this package :
     subroutines folder : all subroutines needed by the different parts of the algorithm. 
    
 USAGE : from matlab, includes the two subfolders Functions and Subroutines (for instance using path(path,'./Functions');
-path(path,'./Subroutines'); path(path,'./Functions');). Then  run the demo demo_LowRAMP_UV, demo_PCA_and_completion or demo_LowRAMP_XX
+path(path,'./Subroutines'); path(path,'./Functions');). 
+
+Then run 
+* demo demo_LowRAMP_UV for a UV factorization of a clustering  problem
+* demo_PCA_and_completion for a completion problem
+* demo_LowRAMP_XX for a community detection problem
+* demo_Rank1_Submatrix for a submatrix localization problem
 
 These equations are based on http://arxiv.org/abs/1503.00338 (ISIT 2015) and http://arxiv.org/abs/1507.03857
+They follow from earlier works: 
+http://arxiv.org/abs/1402.2238
+http://arxiv.org/pdf/1202.2759.pdf
+http://papers.nips.cc/paper/5074-low-rank-matrix-reconstruction-and-clustering-via-approximate-message-passing
 Comments and remarks regarding bugs or functionalities are more than welcome.

@@ -93,10 +93,6 @@ function [ x ] = LowRAMP_XX( S, Delta , RANK,opt)
         B_new=(S*x)/sqrt(n)-x_old*x_V/(Delta);
         A_new=x'*x/(n*Delta);
         
-        %Right, here i can play...
-    %   m_mean=sum(sum(triu(A_new,1)))/((RANK*RANK-RANK)*0.5);    
-    %   A_new=diag(diag(A_new))+triu(ones(RANK,RANK),1)*m_mean+triu(ones(RANK,RANK),1)'*m_mean;
-
         %Keep old variables
         x_old=x;
         

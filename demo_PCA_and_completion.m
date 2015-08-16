@@ -7,6 +7,7 @@ fprintf(1,'Let us first try a regular PCA factorization \n');
 m=5000;n=5000;%size of the vector U and V
 Delta=1e-4;%Variance of the gaussian noise
 RANK=3;%rank
+fprintf(1,'Creating a %dx%d signal of rank %d ...\n',m,n,RANK);
 
 fprintf(1,'Creating a %dx%d signal of rank %d ...\n',m,n,RANK);
 
