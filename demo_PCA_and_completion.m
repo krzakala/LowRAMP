@@ -9,8 +9,6 @@ Delta=1e-4;%Variance of the gaussian noise
 RANK=3;%rank
 fprintf(1,'Creating a %dx%d signal of rank %d ...\n',m,n,RANK);
 
-fprintf(1,'Creating a %dx%d signal of rank %d ...\n',m,n,RANK);
-
 U = randn(m,RANK);
 V = randn(n,RANK);
 
