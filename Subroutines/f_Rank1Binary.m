@@ -1,9 +1,9 @@
 function [MEAN,VAR,logZ] = f_Rank1Binary(A,B,rho)
-    %Rank 1 0/1 prior
-    %rho is the a priori fraction of 1
+   %Rank 1 0/1 prior
+   %rho is the a priori fraction of 1
    if (nargin <= 2)
         rho=0.5; % Use default  parameters
-    end   
+   end   
    Weight=-0.5*A+B;
    pos=find(Weight>0);
    neg=setdiff([1:size(B,1)],pos);

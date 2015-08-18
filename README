@@ -1,4 +1,4 @@
-LowRAMP: Low rank Approximate Message Passing, a software for low rank matrix factorization based on belief propagation.
+LowRAMP: Low rank Approximate Message Passing, a MATLAB software for low rank matrix factorization based on belief propagation.
 COPYRIGHT (C) 2015 Thibault Lesieur, Florent Krzakala and Lenka Zdeborova
 Contact : florent.krzakala@ens.fr
 
@@ -21,7 +21,7 @@ USAGE : from matlab, includes the two subfolders Functions and Subroutines (for 
 path(path,'./Subroutines'); path(path,'./Functions');). 
 
 Then run 
-* demo demo_LowRAMP_UV for a UV factorization of a clustering  problem
+* demo_LowRAMP_UV for a UV factorization of a clustering  problem
 * demo_PCA_and_completion for a completion problem
 * demo_LowRAMP_XX for a community detection problem
 * demo_Rank1_Submatrix for a submatrix localization problem
